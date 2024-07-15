@@ -36,6 +36,38 @@ describe("/api/topics", () => {
     });
   });
 });
+describe("/api/articles", () => {
+  describe("GET", () => {
+    test("should return an array of articles and a status of 200", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBeGreaterThan(0);
+          articles.forEach((article) => {
+            expect(article).toEqual({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    test("should return the articles sorted by date in descending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+  });
+});
 describe("/api/articles/:article_id", () => {
   describe("GET", () => {
     test("should return an object article at the id in the url with status 200 ", () => {
