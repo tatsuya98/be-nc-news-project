@@ -4,13 +4,16 @@ const { getEndpoints } = require("./getEndpoints");
 const {
   getArticleById,
   getArticles,
-  getCommentsByArticleId,
 } = require("./controllers/articles.controllers");
 const {
   SqlErrorHandling,
   customErrorHandling,
 } = require("./errorHandling/errorHandling");
+const {
+  getCommentsByArticleId,
+} = require("./controllers/comments.controllers");
 const app = express();
+
 app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
