@@ -36,3 +36,41 @@ describe("/api/topics", () => {
     });
   });
 });
+describe("/api/articles/:article_id", () => {
+  describe("GET", () => {
+    test("should return an object article at the id in the url with status 200 ", () => {
+      return request(app)
+        .get("/api/articles/2")
+        .expect(200)
+        .then(({ body: { article } }) => {
+          expect(article.article_id).toBe(2);
+          expect(article).toEqual({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    test("should return a message of bad request and a status of 400 when parametric endpoint is not a number", () => {
+      return request(app)
+        .get("/api/articles/hello")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad request");
+        });
+    });
+    test("should return a message article not found and a status of 404 when id is valid but not in the database", () => {
+      return request(app)
+        .get("/api/articles/555")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Article not found");
+        });
+    });
+  });
+});
