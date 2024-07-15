@@ -106,3 +106,49 @@ describe("/api/articles/:article_id", () => {
     });
   });
 });
+describe("/api/articles/:article_id/comments", () => {
+  describe("GET", () => {
+    test("should return an array of comments by article_id in url with a status of 200", () => {
+      return request(app)
+        .get("/api/articles/3/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments.length).toBeGreaterThan(0);
+          comments.forEach((comment) => {
+            expect(comment).toEqual({
+              comment_id: expect.any(Number),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+              author: expect.any(String),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+            });
+          });
+        });
+    });
+    test("should be sorted by most recent comment first", () => {
+      return request(app)
+        .get("/api/articles/3/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("should return a status of 400 and message of bad request", () => {
+      return request(app)
+        .get("/api/articles/hello/comments")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad request");
+        });
+    });
+    test("should return a status of 404 and message of no comments found for article id", () => {
+      return request(app)
+        .get("/api/articles/555/comments")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("no comments found for this article id");
+        });
+    });
+  });
+});
