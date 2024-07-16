@@ -18,3 +18,16 @@ exports.fetchArticleById = (article_id) => {
       return rows[0];
     });
 };
+exports.updateArticleById = (article_id, updateData) => {
+  return db
+    .query(
+      "UPDATE articles SET votes = CASE WHEN votes + $1 < 0 THEN 0 ELSE votes + $1 END  WHERE article_id = $2 RETURNING *",
+      [updateData.inc_vote, article_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, message: "article not found" });
+      }
+      return rows[0];
+    });
+};

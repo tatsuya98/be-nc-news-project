@@ -4,6 +4,7 @@ const { getEndpoints } = require("./getEndpoints");
 const {
   getArticleById,
   getArticles,
+  patchArticles,
 } = require("./controllers/articles.controllers");
 const {
   SqlErrorHandling,
@@ -20,6 +21,7 @@ app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
+app.patch("/api/articles/:article_id", patchArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postToComments);
 app.use(SqlErrorHandling);
