@@ -8,6 +8,13 @@ exports.customErrorHandling = (error, request, response, next) => {
 exports.SqlErrorHandling = (error, request, response, next) => {
   if (error.code === "22P02") {
     response.status(400).send({ message: "Bad request" });
+  }
+  if (error.code === "23503") {
+    response
+      .status(422)
+      .send({
+        message: "unable to post comment to an article that does not exist",
+      });
   } else {
     next(error);
   }
