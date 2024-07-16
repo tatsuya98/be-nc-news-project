@@ -2,8 +2,8 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
+  checkArticleExists,
 } = require("../db/seeds/utils");
-
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
     const timestamp = 1557572706232;
@@ -100,5 +100,18 @@ describe("formatComments", () => {
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
+  });
+});
+
+describe("checkArticleExists", () => {
+  test("should return false if article does not exist for article_id", () => {
+    checkArticleExists(14).then((result) => {
+      expect(result).toBe(false);
+    });
+  });
+  test("should return true if article does exist for article_id", () => {
+    checkArticleExists(13).then((result) => {
+      expect(result).toBe(true);
+    });
   });
 });

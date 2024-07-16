@@ -1,19 +1,22 @@
 const db = require("../db/connection");
+const { checkArticleExists } = require("../db/seeds/utils");
 exports.fetchCommentsByArticleId = (article_id) => {
-  return db
-    .query(
+  const promiseArray = [
+    db.query(
       "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC",
       [article_id]
-    )
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          message: "no comments found for this article id",
-        });
-      }
-      return rows;
+    ),
+    checkArticleExists(article_id),
+  ];
+  return Promise.all(promiseArray).then(([commets, articleExists]) => {
+    if (articleExists && commets.rows.length >= 0) {
+      return commets.rows;
+    }
+    return Promise.reject({
+      status: 404,
+      message: "no comments found for this article id",
     });
+  });
 };
 exports.updateCommentsByArticleId = (article_id, userCommentData) => {
   return db

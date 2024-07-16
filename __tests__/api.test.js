@@ -135,6 +135,15 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments).toBeSortedBy("created_at", { descending: true });
         });
     });
+    test("should return an empty array if article exists and has no comments", () => {
+      return request(app)
+        .get("/api/articles/13/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments.length).toBe(0);
+          expect(comments).toEqual([]);
+        });
+    });
     test("should return a status of 400 and message of bad request", () => {
       return request(app)
         .get("/api/articles/hello/comments")
