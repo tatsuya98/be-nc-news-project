@@ -173,7 +173,12 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(201)
         .then(({ body: { userComment } }) => {
           expect(userComment).toEqual({
+            comment_id: expect.any(Number),
             body: expect.any(String),
+            article_id: 3,
+            author: "butter_bridge",
+            votes: expect.any(Number),
+            created_at: expect.any(String),
           });
         });
     });
@@ -188,6 +193,31 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad request");
+        });
+    });
+    test("should return a status 400 with a message of request is missing 1 or more fields", () => {
+      const testComment = {
+        body: "Hello",
+      };
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("request is missing 1 or more fields");
+        });
+    });
+    test("should return a status of 404 if username does not exist", () => {
+      const testComment = {
+        user: "Hello",
+        body: "hi",
+      };
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("username does not exist");
         });
     });
     test("should return a status 422 with a message of unable to post comment to an article that does not exist", () => {
