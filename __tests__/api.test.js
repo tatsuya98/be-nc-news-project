@@ -4,6 +4,7 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const app = require("../app.js");
 const endpoints = require("../endpoints.json");
+const comments = require("../db/data/test-data/comments.js");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 describe("/api", () => {
@@ -77,7 +78,7 @@ describe("/api/articles/:article_id", () => {
         .then(({ body: { article } }) => {
           expect(article.article_id).toBe(2);
           expect(article).toEqual({
-            article_id: expect.any(Number),
+            article_id: 2,
             title: expect.any(String),
             topic: expect.any(String),
             author: expect.any(String),
@@ -118,7 +119,7 @@ describe("/api/articles/:article_id/comments", () => {
             expect(comment).toEqual({
               comment_id: expect.any(Number),
               body: expect.any(String),
-              article_id: expect.any(Number),
+              article_id: 3,
               author: expect.any(String),
               votes: expect.any(Number),
               created_at: expect.any(String),
@@ -148,6 +149,51 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(404)
         .then(({ body: { message } }) => {
           expect(message).toBe("no comments found for this article id");
+        });
+    });
+  });
+  describe("POST", () => {
+    test("should return an object with user's comment with a status of 201", () => {
+      const testComment = {
+        user: "butter_bridge",
+        body: "Hello",
+      };
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send(testComment)
+        .expect(201)
+        .then(({ body: { userComment } }) => {
+          expect(userComment).toEqual({
+            body: expect.any(String),
+          });
+        });
+    });
+    test("should return a status 400 with a message of bad request when article id is not a number", () => {
+      const testComment = {
+        user: "butter_bridge",
+        body: "Hello",
+      };
+      return request(app)
+        .post("/api/articles/hello/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad request");
+        });
+    });
+    test("should return a status 422 with a message of unable to post comment to an article that does not exist", () => {
+      const testComment = {
+        user: "butter_bridge",
+        body: "Hello",
+      };
+      return request(app)
+        .post("/api/articles/444/comments")
+        .send(testComment)
+        .expect(422)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "unable to post comment to an article that does not exist"
+          );
         });
     });
   });
