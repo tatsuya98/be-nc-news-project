@@ -18,7 +18,7 @@ exports.fetchCommentsByArticleId = (article_id) => {
     });
   });
 };
-exports.updateCommentsByArticleId = (article_id, userCommentData) => {
+exports.insertIntoCommentsByArticleId = (article_id, userCommentData) => {
   return db
     .query(
       "INSERT INTO comments (body, article_id, author) VALUES($1, $2, $3) RETURNING *",
