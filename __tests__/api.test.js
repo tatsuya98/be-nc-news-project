@@ -5,6 +5,7 @@ const data = require("../db/data/test-data/index");
 const app = require("../app.js");
 const endpoints = require("../endpoints.json");
 const comments = require("../db/data/test-data/comments.js");
+const articles = require("../db/data/test-data/articles.js");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 describe("/api", () => {
@@ -108,6 +109,55 @@ describe("/api/articles?=", () => {
       .expect(400)
       .then(({ body: { message } }) => {
         expect(message).toBe("can't order by this query");
+      });
+  });
+});
+describe("/api/articles?topic=", () => {
+  test("should return an array of articles filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            topic: "cats",
+          });
+        });
+      });
+  });
+  test("should return all articles if no topic is provided", () => {
+    return request(app)
+      .get("/api/articles?")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        articles.forEach((article) => {
+          expect(article).toEqual({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test("should return an array of articles filtered by topic and sorted by title in ascending order", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=title&order_by=ASC")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles).toBeSortedBy("title", { ascending: true });
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            topic: "mitch",
+          });
+        });
       });
   });
 });
