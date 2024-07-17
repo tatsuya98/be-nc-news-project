@@ -1,6 +1,7 @@
 const {
   fetchCommentsByArticleId,
   insertIntoCommentsByArticleId,
+  removeComment,
 } = require("../models/comments.models");
 
 exports.getCommentsByArticleId = (request, response, next) => {
@@ -19,6 +20,16 @@ exports.postToComments = (request, response, next) => {
   return insertIntoCommentsByArticleId(article_id, userCommentData)
     .then((userComment) => {
       response.status(201).send({ userComment });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.deleteComment = (request, response, next) => {
+  const { comment_id } = request.params;
+  return removeComment(comment_id)
+    .then(() => {
+      response.status(204).send({});
     })
     .catch((error) => {
       next(error);
