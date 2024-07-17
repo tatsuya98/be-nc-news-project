@@ -1,8 +1,23 @@
 const db = require("../db/connection");
-exports.fetchArticles = () => {
+const {
+  articlesSortByCheck,
+  articlesOrderByCheck,
+} = require("../db/seeds/utils");
+exports.fetchArticles = (sort_by = "created_at", order_by = "DESC") => {
+  const validSortBy = articlesSortByCheck(sort_by);
+  const validOrderBy = articlesOrderByCheck(order_by);
+  if (!validSortBy) {
+    return Promise.reject({ status: 400, message: "can't sort by this query" });
+  }
+  if (!validOrderBy) {
+    return Promise.reject({
+      status: 400,
+      message: "can't order by this query",
+    });
+  }
   return db
     .query(
-      "SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY created_at DESC"
+      `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${order_by}`
     )
     .then(({ rows }) => {
       return rows;

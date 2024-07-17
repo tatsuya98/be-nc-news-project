@@ -3,6 +3,8 @@ const {
   createRef,
   formatComments,
   checkArticleExists,
+  articlesSortByCheck,
+  articlesOrderByCheck,
 } = require("../db/seeds/utils");
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -113,5 +115,29 @@ describe("checkArticleExists", () => {
     checkArticleExists(13).then((result) => {
       expect(result).toBe(true);
     });
+  });
+});
+describe("articlesSortByCheck", () => {
+  test("should return true if query is included in list of words", () => {
+    const actual = articlesSortByCheck("article_id");
+    expect(actual).toBe(true);
+  });
+  test("should return false if query is not included in list of words", () => {
+    const actual = articlesSortByCheck(1);
+    expect(actual).toBe(false);
+  });
+});
+describe("articlesOrderByCheck", () => {
+  test("should return true if query is included in the list", () => {
+    const actual = articlesOrderByCheck("ASC");
+    expect(actual).toBe(true);
+  });
+  test("should return false if query is not included in the list", () => {
+    const actual = articlesOrderByCheck(1);
+    expect(actual).toBe(false);
+  });
+  test("should return false if spelling is correct but case is wrong", () => {
+    const actual = articlesOrderByCheck("asc");
+    expect(actual).toBe(false);
   });
 });

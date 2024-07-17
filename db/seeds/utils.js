@@ -32,3 +32,20 @@ exports.checkArticleExists = (article_id) => {
       return true;
     });
 };
+exports.articlesSortByCheck = (sort_by) => {
+  const sortByWhiteListedWords = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url",
+  ];
+  return sortByWhiteListedWords.includes(sort_by);
+};
+exports.articlesOrderByCheck = (order_by) => {
+  const orderByWhiteListedWords = ["ASC", "DESC"];
+  return orderByWhiteListedWords.includes(order_by);
+};
