@@ -4,8 +4,6 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const app = require("../app.js");
 const endpoints = require("../endpoints.json");
-const comments = require("../db/data/test-data/comments.js");
-const articles = require("../db/data/test-data/articles.js");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 describe("/api", () => {
@@ -169,12 +167,30 @@ describe("/api/articles/:article_id", () => {
         .expect(200)
         .then(({ body: { article } }) => {
           expect(article.article_id).toBe(2);
-          expect(article).toEqual({
+          expect(article).toMatchObject({
             article_id: 2,
             title: expect.any(String),
             topic: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    test("should return an object article including a comment count", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body: { article } }) => {
+          expect(article).toEqual({
+            article_id: 1,
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            comment_count: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
