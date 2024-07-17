@@ -307,3 +307,23 @@ describe("/api/comments/:comment_id", () => {
     });
   });
 });
+
+describe("/api/users", () => {
+  describe("GET", () => {
+    test("should return a status of 200 and an array of users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body: { users } }) => {
+          expect(users.length).toBeGreaterThan(0);
+          users.forEach((user) => {
+            expect(user).toEqual({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+});
