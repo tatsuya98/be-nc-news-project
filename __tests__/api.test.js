@@ -69,6 +69,48 @@ describe("/api/articles", () => {
     });
   });
 });
+describe("/api/articles?=", () => {
+  test("should return an array of articles sorted by id in descending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order_by=DESC")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id", { descending: true });
+      });
+  });
+  test("should return an array of articles sorted by votes should default to descending if order_by is not provided", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("should return an array of articles in asecending order and default to created_at if sort_by is not provided", () => {
+    return request(app)
+      .get("/api/articles?&order_by=ASC")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("should return a status of 400 and a message of can't sort by this query if sort_by query is not one of the column names in the articles table", () => {
+    return request(app)
+      .get("/api/articles?sort_by=1")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("can't sort by this query");
+      });
+  });
+  test("should return a status of 400 and a message of can't order by this query", () => {
+    return request(app)
+      .get("/api/articles?order_by=1")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("can't order by this query");
+      });
+  });
+});
 describe("/api/articles/:article_id", () => {
   describe("GET", () => {
     test("should return an object article at the id in the url with status 200 ", () => {
