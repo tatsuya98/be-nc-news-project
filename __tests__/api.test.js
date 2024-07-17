@@ -106,6 +106,53 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
+  describe("PATCH", () => {
+    test("should return a status of 200 and a message of article has been updated", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_vote: 10 })
+        .expect(200)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("article with article_id 1 has been updated");
+        });
+    });
+    test("votes should be 0 if the decrease amount is higher than the number of votes", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_vote: -10000 })
+        .expect(200)
+        .then(({ body: { updatedArticle } }) => {
+          expect(updatedArticle.votes).toBe(0);
+        });
+    });
+    test("should return a status of 400 and message of Bad request when id is not a number", () => {
+      return request(app)
+        .patch("/api/articles/h")
+        .send({ inc_vote: 10 })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad request");
+        });
+    });
+    test("should return a status of 400 and message of Bad request when value type is incorrect ", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_vote: "h" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad request");
+        });
+    });
+    test("should return a status 404 and a message of article not found", () => {
+      return request(app)
+        .patch("/api/articles/444")
+        .send({ inc_vote: 10 })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("article not found");
+        });
+    });
+  });
 });
 describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
@@ -236,50 +283,26 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
-  describe("PATCH", () => {
-    test("should return a status of 200 and a message of article has been updated", () => {
-      return request(app)
-        .patch("/api/articles/1")
-        .send({ inc_vote: 10 })
-        .expect(200)
-        .then(({ body: { message } }) => {
-          expect(message).toBe("article with article_id 1 has been updated");
-        });
+});
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE", () => {
+    test("should return a status of 204 ", () => {
+      return request(app).delete("/api/comments/2").expect(204);
     });
-    test("votes should be 0 if the decrease amount is higher than the number of votes", () => {
+    test("should return a status of 400 when id is not a number", () => {
       return request(app)
-        .patch("/api/articles/1")
-        .send({ inc_vote: -10000 })
-        .expect(200)
-        .then(({ body: { updatedArticle } }) => {
-          expect(updatedArticle.votes).toBe(0);
-        });
-    });
-    test("should return a status of 400 and message of Bad request when id is not a number", () => {
-      return request(app)
-        .patch("/api/articles/h")
-        .send({ inc_vote: 10 })
+        .delete("/api/comments/h")
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad request");
         });
     });
-    test("should return a status of 400 and message of Bad request when value type is incorrect ", () => {
+    test("should return a status of 404 when id is not found", () => {
       return request(app)
-        .patch("/api/articles/1")
-        .send({ inc_vote: "h" })
-        .expect(400)
-        .then(({ body: { message } }) => {
-          expect(message).toBe("Bad request");
-        });
-    });
-    test("should return a status 404 and a message of article not found", () => {
-      return request(app)
-        .patch("/api/articles/444")
-        .send({ inc_vote: 10 })
+        .delete("/api/comments/345")
         .expect(404)
         .then(({ body: { message } }) => {
-          expect(message).toBe("article not found");
+          expect(message).toBe("comment not found");
         });
     });
   });
