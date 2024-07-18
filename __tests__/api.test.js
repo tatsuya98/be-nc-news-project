@@ -435,7 +435,7 @@ describe("/api/users", () => {
     });
   });
 });
-describe.only("/api/users/:username", () => {
+describe("/api/users/:username", () => {
   test("should return an object with the users data for username provided", () => {
     return request(app)
       .get("/api/users/butter_bridge")
