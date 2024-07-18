@@ -414,6 +414,53 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
+  describe("PATCH", () => {
+    test("should return a message of votes on comment has been updated", () => {
+      return request(app)
+        .patch("/api/comments/2")
+        .send({ inc_votes: 3 })
+        .expect(200)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("votes on comment has been updated");
+        });
+    });
+    test("should return an updatedComment with a votes of 0 if the inc_votes is greater than the number of votes on comment", () => {
+      return request(app)
+        .patch("/api/comments/3")
+        .send({ inc_votes: -1000 })
+        .expect(200)
+        .then(({ body: { updatedComment } }) => {
+          expect(updatedComment.votes).toBe(0);
+        });
+    });
+    test("should return a status 400 and bad request if inc_votes is not a number", () => {
+      return request(app)
+        .patch("/api/comments/2")
+        .send({ inc_votes: "hello" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad request");
+        });
+    });
+    test("should return a status 400 and bad request if number is not an Integer", () => {
+      return request(app)
+        .patch("/api/comments/2")
+        .send({ inc_votes: 3.5 })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad request");
+        });
+    });
+    test("should return a status of 404 and comment not found if id is not in the database", () => {
+      return request(app)
+        .patch("/api/comments/34343")
+        .send({ inc_votes: 12 })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("comment not found");
+        });
+    });
+  });
 });
 
 describe("/api/users", () => {
