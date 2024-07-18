@@ -3,14 +3,9 @@ const {
   articlesSortByCheck,
   articlesOrderByCheck,
 } = require("../db/seeds/utils");
-exports.fetchArticles = (
-  sort_by = "created_at",
-  order_by = "DESC",
-  topic = "topic"
-) => {
+exports.fetchArticles = (sort_by = "created_at", order_by = "DESC", topic) => {
   const validSortBy = articlesSortByCheck(sort_by);
   const validOrderBy = articlesOrderByCheck(order_by);
-  let queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id WHERE topic=${topic} GROUP BY articles.article_id ORDER BY ${sort_by} ${order_by}`;
   if (!validSortBy) {
     return Promise.reject({ status: 400, message: "can't sort by this query" });
   }
@@ -20,7 +15,8 @@ exports.fetchArticles = (
       message: "can't order by this query",
     });
   }
-  if (topic !== "topic") {
+  let queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${order_by}`;
+  if (topic) {
     queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM comments LEFT JOIN articles ON comments.article_id = articles.article_id WHERE topic=$1 GROUP BY articles.article_id ORDER BY ${sort_by} ${order_by}`;
     return db.query(queryStr, [topic]).then(({ rows }) => {
       return rows;
