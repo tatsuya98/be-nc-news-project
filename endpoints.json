@@ -12,6 +12,16 @@
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
+    "sort_by": [
+      "article_id",
+      "title",
+      "topic",
+      "author",
+      "body",
+      "created_at",
+      "votes",
+      "article_img_url"
+    ],
     "exampleResponse": {
       "articles": [
         {
@@ -25,5 +35,66 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article if the article exist for the id accepts id of type int",
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "votes": 0,
+        "comment_count": 0
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "serves an article after updating it. it accepts an object with a value that increases or decreases vote by a certain amount and an id of type int",
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "votes": 100,
+        "comment_count": 6
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "servers an array of comments if there are comments for the article or an empty array if there are no comments for exsisting article accepts id of type int",
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "body": "Text from the comment",
+          "article_id": 2,
+          "author": "user_name",
+          "votes": 0,
+          "created_at": "2018-05-30T15:59:13.341Z"
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "serves comment the user makes on the article accepts id of type int",
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 5,
+        "body": "Text from the comment",
+        "article_id": 2,
+        "author": "user_name",
+        "votes": 0,
+        "created_at": "2018-05-30T15:59:13.341Z"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_Id": {
+    "description": "removes comment for specified comment_id accepts id of type int"
   }
 }
