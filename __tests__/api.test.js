@@ -435,3 +435,25 @@ describe("/api/users", () => {
     });
   });
 });
+describe.only("/api/users/:username", () => {
+  test("should return an object with the users data for username provided", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toEqual({
+          username: "butter_bridge",
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        });
+      });
+  });
+  test("should return a status of 404 with a message of user not found", () => {
+    return request(app)
+      .get("/api/users/1")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("user not found");
+      });
+  });
+});
