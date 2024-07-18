@@ -24,7 +24,7 @@ exports.getArticleById = (request, response, next) => {
       next(error);
     });
 };
-exports.patchArticles = (request, response, next) => {
+exports.patchArticle = (request, response, next) => {
   const updateData = request.body;
   const { article_id } = request.params;
   return updateArticleById(article_id, updateData)
