@@ -39,11 +39,11 @@ exports.fetchArticleById = (article_id) => {
       return rows[0];
     });
 };
-exports.updateArticleById = (article_id, updateData) => {
+exports.updateArticleById = (article_id, inc_vote) => {
   return db
     .query(
       "UPDATE articles SET votes = CASE WHEN votes + $1 < 0 THEN 0 ELSE votes + $1 END  WHERE article_id = $2 RETURNING *",
-      [updateData.inc_vote, article_id]
+      [inc_vote, article_id]
     )
     .then(({ rows }) => {
       if (rows.length === 0) {
