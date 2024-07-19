@@ -52,3 +52,23 @@ exports.updateArticleById = (article_id, inc_vote) => {
       return rows[0];
     });
 };
+exports.insertIntoArticles = (article) => {
+  const { author, title, body, topic, article_img_url } = article;
+  let values = [author, title, body, topic, article_img_url];
+  if (!article_img_url) {
+    values = [author, title, body, topic, "url"];
+  }
+  const selectQuery =
+    " INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5);";
+  return db
+    .query(selectQuery, values)
+    .then(() => {
+      return db.query(
+        "SELECT articles.article_id, articles.title, articles.topic, articles.author,articles.body, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.author = $1 GROUP BY articles.article_id ORDER BY created_at DESC LIMIT 1",
+        [author]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

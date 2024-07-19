@@ -2,6 +2,7 @@ const {
   fetchArticleById,
   fetchArticles,
   updateArticleById,
+  insertIntoArticles,
 } = require("../models/articles.models");
 
 exports.getArticles = (request, response, next) => {
@@ -33,6 +34,16 @@ exports.patchArticle = (request, response, next) => {
         updatedArticle,
         message: `article with article_id ${article_id} has been updated`,
       });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.postToArticles = (request, response, next) => {
+  const article = request.body;
+  return insertIntoArticles(article)
+    .then((newArticle) => {
+      response.status(201).send({ newArticle });
     })
     .catch((error) => {
       next(error);

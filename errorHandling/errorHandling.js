@@ -19,6 +19,11 @@ exports.SqlErrorHandling = (error, request, response, next) => {
       message: "username does not exist",
     });
   }
+  if (error.code === "23503" && error.detail.includes("topics")) {
+    response.status(404).send({
+      message: "topic not found",
+    });
+  }
 
   if (error.code === "23502") {
     response
