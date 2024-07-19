@@ -67,6 +67,106 @@ describe("/api/articles", () => {
         });
     });
   });
+  describe("POST", () => {
+    test("should return the new inserted object with status 201 ", () => {
+      const testArticle = {
+        author: "butter_bridge",
+        title: "yes",
+        body: "hello",
+        topic: "cats",
+        article_img_url: "url",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201)
+        .then(({ body: { newArticle } }) => {
+          expect(newArticle).toMatchObject({
+            author: "butter_bridge",
+            title: "yes",
+            body: "hello",
+            topic: "cats",
+            article_img_url: "url",
+            article_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+    });
+    test("should default to url when no img url is provided", () => {
+      const testArticle = {
+        author: "butter_bridge",
+        title: "yes",
+        body: "hello",
+        topic: "cats",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201)
+        .then(({ body: { newArticle } }) => {
+          expect(newArticle).toMatchObject({
+            author: "butter_bridge",
+            title: "yes",
+            body: "hello",
+            topic: "cats",
+            article_img_url: "url",
+            article_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+    });
+    test("should return a status 400 and message of request is missing 1 or more fields ", () => {
+      const testArticle = {
+        title: "yes",
+        body: "hello",
+        topic: "cats",
+        article_img_url: "url",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("request is missing 1 or more fields");
+        });
+    });
+    test("should return a status 404 when user does not exist", () => {
+      const testArticle = {
+        author: "hi",
+        title: 2,
+        body: "1",
+        topic: "cats",
+        article_img_url: "url",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("username does not exist");
+        });
+    });
+    test("should return a status of 404 when topic is not found", () => {
+      const testArticle = {
+        author: "butter_bridge",
+        title: "yes",
+        body: "hello",
+        topic: "dogs",
+        article_img_url: "url",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("topic not found");
+        });
+    });
+  });
 });
 describe("/api/articles?=", () => {
   test("should return an array of articles sorted by id in descending order", () => {
