@@ -74,7 +74,7 @@
   },
   "PATCH /api/articles/:article_id": {
     "description": "serves an article after updating it. it accepts an object with a value that increases or decreases vote by a certain amount and an id of type int",
-    "body": {inc_votes: 1},
+    "body": {"inc_votes": 1},
     "exampleResponse": {
       "article": {
         "article_id": 1,
