@@ -193,6 +193,28 @@ describe("/api/articles?=", () => {
         expect(articles).toBeSortedBy("created_at", { ascending: true });
       });
   });
+  test("should return an array of articles in descending order sorted by comment count", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("comment_count", {
+          descending: true,
+          coerce: true,
+        });
+      });
+  });
+  test("should return an array of articles in ascending order sorted by comment count", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count&order_by=ASC")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("comment_count", {
+          ascending: true,
+          coerce: true,
+        });
+      });
+  });
   test("should return a status of 400 and a message of can't sort by this query if sort_by query is not one of the column names in the articles table", () => {
     return request(app)
       .get("/api/articles?sort_by=1")
