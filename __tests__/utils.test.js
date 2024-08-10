@@ -5,6 +5,7 @@ const {
   checkArticleExists,
   articlesSortByCheck,
   articlesOrderByCheck,
+  generateHash,
 } = require("../db/seeds/utils");
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -139,5 +140,28 @@ describe("articlesOrderByCheck", () => {
   test("should return false if spelling is correct but case is wrong", () => {
     const actual = articlesOrderByCheck("asc");
     expect(actual).toBe(false);
+  });
+});
+
+describe("generateHash", () => {
+  test("should return a hash when passed plain text password", () => {
+    generateHash("password123").then(({ salt, hash }) => {
+      expect(hash).not.toBe("password123");
+    });
+  });
+  test("should return an array of  hashes when passed an array of plain text passwords", () => {
+    const testPasswords = ["hello", "hello1223", "hello342"];
+    Promise.all(
+      testPasswords.map((password) => {
+        return generateHash(password);
+      })
+    ).then((generatedHashes) => {
+      generatedHashes.forEach((generatedHash) => {
+        expect(generatedHash).toEqual({
+          salt: expect.any(String),
+          hash: expect.any(String),
+        });
+      });
+    });
   });
 });

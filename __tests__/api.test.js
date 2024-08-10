@@ -596,6 +596,8 @@ describe("/api/users", () => {
           users.forEach((user) => {
             expect(user).toEqual({
               username: expect.any(String),
+              password: expect.any(String),
+              salt: expect.any(String),
               name: expect.any(String),
               avatar_url: expect.any(String),
             });
@@ -612,6 +614,8 @@ describe("/api/users/:username", () => {
       .then(({ body: { user } }) => {
         expect(user).toEqual({
           username: "butter_bridge",
+          password: expect.any(String),
+          salt: expect.any(String),
           name: expect.any(String),
           avatar_url: expect.any(String),
         });

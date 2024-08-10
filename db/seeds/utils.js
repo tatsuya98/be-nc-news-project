@@ -50,3 +50,11 @@ exports.articlesOrderByCheck = (order_by) => {
   const orderByWhiteListedWords = ["ASC", "DESC"];
   return orderByWhiteListedWords.includes(order_by);
 };
+
+exports.generateHash = async (password) => {
+  const bcrypt = require("bcrypt");
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hash = await bcrypt.hash(password, salt);
+  return Promise.resolve({ salt, hash });
+};
