@@ -598,6 +598,7 @@ describe("/api/users", () => {
               username: expect.any(String),
               password: expect.any(String),
               salt: expect.any(String),
+              email: expect.any(String),
               name: expect.any(String),
               avatar_url: expect.any(String),
             });
@@ -616,6 +617,7 @@ describe("/api/users/:username", () => {
           username: "butter_bridge",
           password: expect.any(String),
           salt: expect.any(String),
+          email: expect.any(String),
           name: expect.any(String),
           avatar_url: expect.any(String),
         });
@@ -627,6 +629,81 @@ describe("/api/users/:username", () => {
       .expect(404)
       .then(({ body: { message } }) => {
         expect(message).toBe("user not found");
+      });
+  });
+  test("should return a status of 201 with the user object when making post request", () => {
+    const testUser = {
+      username: "tatsuya98",
+      password: "hello123",
+      email: "test@gm.com",
+      name: "nathan",
+      avatar_url: "url",
+    };
+    return request(app)
+      .post("/api/users/")
+      .send(testUser)
+      .expect(201)
+      .then(({ body: { user } }) => {
+        expect(user).toEqual({
+          username: "tatsuya98",
+          password: expect.any(String),
+          email: "test@gm.com",
+          salt: expect.any(String),
+          name: "nathan",
+          avatar_url: "url",
+        });
+      });
+  });
+  test("should return a status 409 and message username already exists", () => {
+    const testUser = {
+      username: "tatsuya98",
+      password: "hello123",
+      email: "test@gm.com",
+      name: "nathan",
+      avatar_url: "url",
+    };
+    const testUser1 = {
+      username: "tatsuya98",
+      password: "hello123",
+      email: "tet@gm.com",
+      name: "nathan",
+      avatar_url: "url",
+    };
+    return request(app)
+      .post("/api/users")
+      .send(testUser)
+      .expect(201)
+      .then(() => {
+        return request(app).post("/api/users").send(testUser1).expect(409);
+      })
+      .then(({ body: { message } }) => {
+        expect(message).toBe("username already exists");
+      });
+  });
+  test("should return a status 409 and message username already exists", () => {
+    const testUser = {
+      username: "tatsuya98",
+      password: "hello123",
+      email: "tet@gm.com",
+      name: "nathan",
+      avatar_url: "url",
+    };
+    const testUser1 = {
+      username: "tatsuya981",
+      password: "hello123",
+      email: "tet@gm.com",
+      name: "nathan",
+      avatar_url: "url",
+    };
+    return request(app)
+      .post("/api/users")
+      .send(testUser)
+      .expect(201)
+      .then(() => {
+        return request(app).post("/api/users").send(testUser1).expect(409);
+      })
+      .then(({ body: { message } }) => {
+        expect(message).toBe("email already exists");
       });
   });
 });

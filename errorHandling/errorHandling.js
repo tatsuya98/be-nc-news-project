@@ -29,8 +29,11 @@ exports.SqlErrorHandling = (error, request, response, next) => {
     response
       .status(400)
       .send({ message: "request is missing 1 or more fields" });
-  } else {
-    next(error);
+  }
+  if (error.code === "23505" && error.detail.includes("username")) {
+    response.status(409).send({ message: "username already exists" });
+  } else if (error.code === "23505" && error.detail.includes("email")) {
+    response.status(409).send({ message: "email already exists" });
   }
 };
 exports.serverErrorHandling = (error, request, response, next) => {
