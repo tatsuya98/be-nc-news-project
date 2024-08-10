@@ -14,8 +14,7 @@ Setup:
 2. clone the repo
 3. after opening in vscode or editor of your choice install any dependencies needed using npm install
 4. create a .env for test and development in the root of the project and set the PGDATABASE for .env.test and .env.development to nc_news_test and nc_news
-5. run the seed-dbs script using npm run seed-dbs to seed the database
-6. npm test api to run tests.
+5. run the test script to seed the test database
 
 ## make sure they are added to your gitignore
 
