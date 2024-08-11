@@ -58,3 +58,9 @@ exports.generateHash = async (password) => {
   const hash = await bcrypt.hash(password, salt);
   return Promise.resolve({ salt, hash });
 };
+
+exports.passwordLoginAttempt = async (passwordAttempt, hash) => {
+  const bcrypt = require("bcrypt");
+  const result = await bcrypt.compare(passwordAttempt, hash);
+  return Promise.resolve(result);
+};

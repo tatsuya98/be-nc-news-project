@@ -2,6 +2,7 @@ const {
   fetchUsers,
   fetchUserByUsername,
   insertUserIntoUsers,
+  fetchUserByUsernamePassword,
 } = require("../models/users.models");
 
 exports.getUsers = (request, response) => {
@@ -12,6 +13,15 @@ exports.getUsers = (request, response) => {
 exports.getUserByUsername = (request, response, next) => {
   const { username } = request.params;
   return fetchUserByUsername(username)
+    .then((user) => {
+      response.status(200).send({ user });
+    })
+    .catch((error) => next(error));
+};
+exports.getUserByUsernamePassword = (request, response, next) => {
+  const { username } = request.params;
+  const { password } = request.body;
+  return fetchUserByUsernamePassword(username, password)
     .then((user) => {
       response.status(200).send({ user });
     })

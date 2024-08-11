@@ -6,6 +6,7 @@ const {
   articlesSortByCheck,
   articlesOrderByCheck,
   generateHash,
+  passwordLoginAttempt,
 } = require("../db/seeds/utils");
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -163,5 +164,18 @@ describe("generateHash", () => {
         });
       });
     });
+  });
+});
+
+describe("passwordLoginAttempt", () => {
+  test("should return true when password matches hash", async () => {
+    const { hash } = await generateHash("password123");
+    const actual = await passwordLoginAttempt("password123", hash);
+    expect(actual).toBe(true);
+  });
+  test("should return false when password doesn't match hash", async () => {
+    const { hash } = await generateHash("password123");
+    const actual = await passwordLoginAttempt("password", hash);
+    expect(actual).toBe(false);
   });
 });

@@ -610,7 +610,8 @@ describe("/api/users", () => {
 describe("/api/users/:username", () => {
   test("should return an object with the users data for username provided", () => {
     return request(app)
-      .get("/api/users/butter_bridge")
+      .post("/api/users/butter_bridge")
+      .send({ username: "butter_bridge", password: "pass123" })
       .expect(200)
       .then(({ body: { user } }) => {
         expect(user).toEqual({
@@ -623,9 +624,19 @@ describe("/api/users/:username", () => {
         });
       });
   });
+  test("should return a message of password is incorrect when sent an incorrect password", () => {
+    return request(app)
+      .post("/api/users/butter_bridge")
+      .send({ username: "butter_bridge", password: "pass12" })
+      .expect(401)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("password is incorrect");
+      });
+  });
   test("should return a status of 404 with a message of user not found", () => {
     return request(app)
-      .get("/api/users/1")
+      .post("/api/users/1")
+      .send({ username: "1", password: "pass123" })
       .expect(404)
       .then(({ body: { message } }) => {
         expect(message).toBe("user not found");
@@ -704,6 +715,32 @@ describe("/api/users/:username", () => {
       })
       .then(({ body: { message } }) => {
         expect(message).toBe("email already exists");
+      });
+  });
+});
+
+describe("fetchUserByUserName", () => {
+  test("should return a user Object for existing user", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toEqual({
+          username: "butter_bridge",
+          password: expect.any(String),
+          email: expect.any(String),
+          salt: expect.any(String),
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        });
+      });
+  });
+  test("should return a messsage of  user not found for non-existing user", () => {
+    return request(app)
+      .get("/api/users/q")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("user not found");
       });
   });
 });
