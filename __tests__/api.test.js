@@ -4,6 +4,7 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const app = require("../app.js");
 const endpoints = require("../endpoints.json");
+const { patchUserPassword } = require("../controllers/users.controllers.js");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 describe("/api", () => {
@@ -742,5 +743,35 @@ describe("fetchUserByUserName", () => {
       .then(({ body: { message } }) => {
         expect(message).toBe("user not found");
       });
+  });
+});
+describe("updateEmailByUsername", () => {
+  test("should update email", () => {
+    const testUser = {
+      username: "butter_bridge",
+      email: "test@gm.com",
+    };
+    return request(app)
+      .patch("/api/users/butter_bridge/email")
+      .send(testUser)
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user.email).toEqual("test@gm.com");
+      });
+  });
+});
+
+describe("patchUserPassword", () => {
+  test("should update password for user", async () => {
+    const testUser = {
+      username: "butter_bridge",
+      password: "hello123",
+    };
+    const { password } = await request(app).get("/api/users/butter_bridge");
+    const actual = await request(app)
+      .patch("/api/users/butter_bridge/password")
+      .send(testUser)
+      .expect(200);
+    expect(actual).not.toBe(password);
   });
 });

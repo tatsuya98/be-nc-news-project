@@ -3,6 +3,7 @@ const {
   fetchUserByUsername,
   insertUserIntoUsers,
   fetchUserByUsernamePassword,
+  updateEmailByUsername,
 } = require("../models/users.models");
 
 exports.getUsers = (request, response) => {
@@ -32,6 +33,26 @@ exports.postUserToUsers = (request, response, next) => {
   return insertUserIntoUsers(userObject)
     .then((user) => {
       response.status(201).send({ user });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+exports.patchUserEmail = (request, response, next) => {
+  const { username } = request.params;
+  const { email } = request.body;
+  return updateEmailByUsername(username, email)
+    .then((user) => {
+      response.status(200).send({ user });
+    })
+    .catch((error) => next(error));
+};
+exports.patchUserPassword = (request, response, next) => {
+  const { username } = request.params;
+  const { password } = request.body;
+  return updateEmailByUsername(username, password)
+    .then((user) => {
+      response.status(200).send({ user });
     })
     .catch((error) => {
       next(error);

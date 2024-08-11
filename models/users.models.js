@@ -53,3 +53,28 @@ exports.insertUserIntoUsers = (user) => {
       return rows[0];
     });
 };
+exports.updateEmailByUsername = (username, email) => {
+  return db
+    .query("UPDATE users SET email = $1 WHERE username = $2 RETURNING *", [
+      email,
+      username,
+    ])
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+exports.updatePasswordByUsername = (username, password) => {
+  return generateHash(password)
+    .then((generatedHash) => {
+      return Promise.resolve(generatedHash);
+    })
+    .then(({ hash, salt }) => {
+      return db.query(
+        "UPDATE users SET password = $1, salt = $2 WHERE username = $3 RETURNING *",
+        [hash, salt, username]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
